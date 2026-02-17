@@ -1,0 +1,21 @@
+/* .boxTasks{
+    background-color: var(--secondaryColor);
+    min-height: 100%;
+    padding: 10px;
+    border-radius: 10px; 
+
+}
+.boxHeader{
+    color: var(--textColorTable);
+    font-size: 22px;
+}
+.taskElement{
+    background-color: var(--mainColor);
+    color: hsl(0, 0%, 100%);
+    margin-block: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+
+
+} */

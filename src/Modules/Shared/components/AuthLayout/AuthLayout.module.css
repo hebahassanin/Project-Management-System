@@ -1,0 +1,35 @@
+.authLayout {
+  min-height: 100vh; 
+  position: relative; 
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.position_img1_authLayout {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 50%;
+  z-index: 1;
+}
+
+.position_img2_authLayout {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  z-index: 1;
+}
+.content_authLayout {
+  position: relative;
+  z-index: 2; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; 
+  min-height: 100vh;
+ 
+}
+
+
