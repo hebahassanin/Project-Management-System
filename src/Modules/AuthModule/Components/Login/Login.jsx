@@ -46,7 +46,6 @@ export default function Login() {
     toast.error(error?.response?.data?.message || "Failed to login",
     { autoClose: 3000
     });
-s
   }
  }
 
