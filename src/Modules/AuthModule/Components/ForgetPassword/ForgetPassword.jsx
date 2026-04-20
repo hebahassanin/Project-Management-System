@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { Button, Col ,Form} from 'react-bootstrap';
 import { EMAIL_VALIDATION} from '../../../../services/validation';
-import AuthHeader from '../../../Shared/components/AuthHeader/AuthHeader.jsx';
+import AuthHeader from '../../../Shared/components/AuthHeader/AuthHeader';
 
 
 
