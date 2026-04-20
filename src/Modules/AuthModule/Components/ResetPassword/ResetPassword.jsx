@@ -2,7 +2,7 @@ import React from 'react'
 import { Col } from 'react-bootstrap';
 import { useOutletContext } from 'react-router-dom'
 import Form from 'react-bootstrap/Form';
-import AuthHeader from '../../../Shared/components/AuthHeader/AuthHeader';
+import AuthHeader from '../../../Shared/components/AuthHeader/AuthHeader.jsx';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
