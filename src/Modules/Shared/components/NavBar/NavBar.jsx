@@ -47,7 +47,7 @@ export default function NavBar({setCollapsed, collapsed}) {
             <img src={profileImg} style={{width:"50px"}} alt="profileimg" className='me-2'/>
             <div className='d-flex flex-column text-start textDark'>
              <span className='fw-bold me-2 t'>{userData?.userName}</span>
-             <span className='me-2'>{userData?.userEmail}</span>
+             <span className='me-2'>{userData?.userGroup}</span>
             </div>
             
             {menuOpen ? <BsChevronUp /> : <BsChevronDown />}

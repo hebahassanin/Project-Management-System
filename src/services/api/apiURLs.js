@@ -33,11 +33,9 @@ export const PROJECT_URLS={
    DELETE_PROJECT: (projectId)=>`/Project/${projectId}`,
    PROJECTS_MANGER:`/Project/manager`,
    PROJECTS_EMPLOYEE:`/Project/employee`,
-
-
 }
-export const TASKS_URLS={
 
+export const TASKS_URLS={
      CREATE_TASK:`/Task`,
      GET_ALL_MY_ASIGGNED_TASK:`/Task`,
      GET_ALL_MY_TASKS_FOR_MANAGER:`/Task/manager`,
@@ -47,6 +45,5 @@ export const TASKS_URLS={
      CONUT_TASKS_FOR_MANAGER_EMPLOYEE:`/Task/count`,
      CHANGE_STATUS:(taskId)=>`/Task/${taskId}/change-status`,
      GET_ALLTASKS_IN_PROJECT:(projectId)=>`/Task/project/${projectId}`
-
 }
 

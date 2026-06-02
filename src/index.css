@@ -3,7 +3,7 @@
 :root {
   --font-family: "Montserrat", sans-serif;
   --font-weight: 400;
-  --mainColor:rgba(239, 155, 40, 1);
+  --mainColor:rgb(239, 155, 40);
   --bgColor:rgb(14, 56, 47);
   --secondaryColor:rgba(49, 89, 81, 0.898);
   --activeBtnColor:rgba(0, 146, 71, 1);
@@ -195,7 +195,6 @@ body.dark .form-admin .form-control:focus {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-
 }
 
 .overlayReg{
@@ -237,13 +236,12 @@ body.dark .form-admin .form-control:focus {
   border:none !important;
   color:#fff !important;
   border-radius: 30px !important;
-  padding: 12px !important;
+  padding: 6px  12px !important;
   transition: all 0.3s ease !important;
 }
 .Auth-btn:hover{
   background-color: var(--mainColor) !important;
   color:#fff !important;
-  /* border:1px solid var(--mainColor) !important; */
 }
 .custom-input .form-control {
   background-color: transparent;
@@ -264,8 +262,6 @@ body.dark .form-admin .form-control:focus {
   border-bottom: 1px solid #f4c27a;
   color: #fff;
 }
-/* start conflict */
-
 
 /* show &hide password */
 .password-wrapper {
@@ -273,15 +269,7 @@ body.dark .form-admin .form-control:focus {
 }
 
 .password-wrapper .form-control {
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  color: #fff;
   padding-right: 35px;
-}
-
-.password-wrapper:focus-within .form-control {
-  border-bottom: 1px solid #f4c27a;
 }
 
 .eye-icon {
@@ -296,96 +284,11 @@ body.dark .form-admin .form-control:focus {
 
 /* end general Auth Css */
 
-
-/*----Auth------*/
-
-.Auth-btn{
-  background-color: var(--mainColor) !important;
-  border:none !important;
-  color:#fff !important;
-  border-radius: 30px !important;
-  padding: 12px !important;
-}
-
-
-/* show &hide password */
-.password-wrapper {
-  position: relative;
-}
-
-.password-wrapper .form-control {
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  color: #fff;
-  padding-right: 35px;
-}
-
-.password-wrapper:focus-within .form-control {
-  border-bottom: 1px solid #f4c27a;
-}
-
 /* end general  */
-/* btn form  styling*/
-.custom-input .form-control {
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 0;
-  color: #fff;
-  padding-left: 0;
-
-}
-.custom-input .form-control::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-
-
-
-.Auth-btn{
-  background-color: var(--mainColor) !important;
-  border:none !important;
-  color:#fff !important;
-  border-radius: 30px !important;
-  padding: 6px  12px !important;
-}
-
-/* btn form  styling*/
-.password-wrapper {
-  position: relative;
-}
 .bg-label{
   color:var(--mainColor);
 }
 
-.password-wrapper .form-control {
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  color: #fff;
-  padding-right: 35px;
-}
-
-.password-wrapper:focus-within .form-control {
-  border-bottom: 1px solid #f4c27a;
-}
-.eye-icon {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-
-
-/* end general  */
-  /* outline: none !important;
-  border: none !important;
-/* end 1 conflict */
-/* end general  */
 /* Chrome Autofill fix */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -400,29 +303,13 @@ select:-webkit-autofill {
   color: var(--mainColor);
   font-weight: 700;
 }
-/* .c-underline {
-  position: relative;
-  display: inline-block;
-} */
-
-/* .c-underline::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -6px;
-  width: 18px;
-  height: 3px;
-  background-color: var(--mainColor);
-  border-radius: 2px;
-} */
 
 .formBg {
 
   position: relative;
   z-index: 5;
 }
-/* end conflict */
-/* } */
+
 /* changepass */
 .eyeicon {
   position: absolute;
@@ -561,7 +448,7 @@ td{
 }
 .form-admin .cancelBtn{
   background-color: #fff;
-  border:1px solid #000;
+  border:1px solid #aaa5a5;
   color:#000;
   border-radius: 30px;
   padding: 10px 20px;

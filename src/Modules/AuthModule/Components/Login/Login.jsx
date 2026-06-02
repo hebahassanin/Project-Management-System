@@ -1,6 +1,5 @@
 import React from 'react'
 import { Col } from 'react-bootstrap';
-// import { useOutletContext } from 'react-router-dom'
 import Form from 'react-bootstrap/Form';
 import AuthHeader from '../../../Shared/components/AuthHeader/AuthHeader';
 import Button from 'react-bootstrap/Button';
@@ -15,6 +14,7 @@ import { toast } from 'react-toastify';
 import axiosInstance from '../../../../services/api/index';
 import { useContext } from 'react';
 import { AuthContext } from '../../../../context/AuthContext';
+import { jwtDecode } from 'jwt-decode';
 
 export default function Login() {
 
@@ -31,11 +31,12 @@ export default function Login() {
 
   try {
     let response= await axiosInstance.post(USER_URLS.LOGIN,data);
+    const decodedToken = jwtDecode(response?.data?.token);
     localStorage.setItem("token",response?.data?.token);
     saveUserData();
 
     console.log(response);
-    toast.success('Welcome to PMS!',
+    toast.success(`Welcome, ${decodedToken.userName} to PMS! `,
     {
       autoClose: 3000,
     })
@@ -44,16 +45,15 @@ export default function Login() {
 
   } catch (error) {
     toast.error(error?.response?.data?.message || "Failed to login",
-    { autoClose: 3000
+    { 
+      autoClose: 3000
     });
   }
  }
 
   return (
     <>
-     <Col {...colProps} className=" p-3 rounded-3 formBg text-white">
-
-
+     <Col {...colProps} className="p-3 rounded-3 formBg text-white">
 
      <Form onSubmit={handleSubmit(onSubmit)} className='mx-5 my-3'>
         <AuthHeader subtitle={'welcome to PMS'} title={'Login'}/>

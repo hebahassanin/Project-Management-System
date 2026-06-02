@@ -12,37 +12,51 @@ const useTasks = () => {
 
     const[singleTask,setSingleTask]=useState()
     const [loading,setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
+    const [tableLoading, setTableLoading] = useState(false);
     const [error,setError] = useState(null);
     const[taskById,setTaskById]=useState(null)
-       //  start server pagination 
+
+    //  start server pagination 
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [total, setTotal] = useState(0);
-
     //  end server pagination 
    
-    let navigate = useNavigate()
+    let navigate = useNavigate();
+
+    // State for search
+   const [searchTerm, setSearchTerm] = useState('');
+
+    // get all tasks assigned to employees for manager(display tasks to manager)
     const fetchTasks = async () => {
         console.log("fetchTasks")
-        setLoading(true);
+        if (initialLoading) {
+            setInitialLoading(true);
+            } else {
+            setTableLoading(true);
+        }
         try {
             const response = await axiosInstance.get(TASKS_URLS.GET_ALL_MY_TASKS_FOR_MANAGER,
             {params:{
                 pageSize:pageSize,
                 pageNumber:page,
+                title:searchTerm
             }});
-
             console.log(response?.data?.data);
             setTasks(response?.data?.data);
 
-            setTotal(response?.data?.totalNumberOfRecords)
+            setTotal(response?.data?.totalNumberOfRecords);
         } catch (err) {
             setError(err);
             getErrorMessage(err,"sorry! can't  loaded tasks now")
         } finally {
-            setLoading(false);
+            setTableLoading(false);
+            setInitialLoading(false);
         }
     }
+
+    // get all tasks assigned to employees from manager (display tasks to employee)
     const fetchUserTasks = async () => {
         setLoading(true);
         try {
@@ -59,13 +73,14 @@ const useTasks = () => {
             setLoading(false);
         }
     }
+
+    // get task by id
      const fetchOneTaskById = async (id) => {
         setLoading(true);
         try {
             const response = await axiosInstance.get(TASKS_URLS.GET_TASK_BY_ID(id));
             console.log(response?.data);
             setSingleTask(response?.data);
-            
         } catch (err) {
             setError(err);
             getErrorMessage(err,"sorry! can't get this task")
@@ -73,17 +88,22 @@ const useTasks = () => {
             setLoading(false);
         }
     }
+
+    // delete task
      const deleteTask = async (id) => {
         setLoading(true);
         try {
             const response = await axiosInstance.delete(`${TASKS_URLS.DELETE_TASK(id)}`);
             console.log("task deleted");
+
+            // remove the deleted task from the tasks state instead of refetching all tasks
             setTasks(tasks.filter(task => task.id !== id));
             setTotal(total-1)
+            toast.success("Task deleted successfully",{ autoClose: 3000 });
         
         } catch (err) {
             setError(err);
-            getErrorMessage(err,"sorry! can't delete this task")
+            getErrorMessage(err,"sorry! can't delete this task");
         } finally {
             setLoading(false);
         }
@@ -91,23 +111,26 @@ const useTasks = () => {
     const getErrorMessage = (err, fallback) =>
    toast.error(err?.response?.data?.message || fallback);
 
-   const addTask = async (data) => {
-  setLoading(true);
-  try {
-   
-    let response =  await axiosInstance.post(TASKS_URLS.CREATE_TASK,data);
-    console.log(response,"resssss")
-    await fetchTasks(); 
-    toast.success("Task added successfully");
-    navigate("/dashboard/tasks");
-  } catch (err) {
-    setError(err);
-    getErrorMessage(err, "sorry! can't add this task");
-  } finally {
-    setLoading(false);
-  }
-};
+    // add task
+    const addTask = async (data) => {
+        setLoading(true);
+        
+        try {
+        let response =  await axiosInstance.post(TASKS_URLS.CREATE_TASK,data);
+        console.log(response,"resssss")
+        await fetchTasks(); 
+        toast.success("Task added successfully",{ autoClose: 3000 });
+        navigate("/dashboard/tasks");
+    } catch (err) {
+        setError(err);
+        getErrorMessage(err, "sorry! can't add this task");
+        toast.error("Failed to add task", { autoClose: 3000 });
+    } finally {
+        setLoading(false);
+    }
+    };
 
+    // update task
      const updateTask = async (id,data) => {
         // setLoading(true);
         console.log(data,"update test")
@@ -122,16 +145,18 @@ const useTasks = () => {
               );
              navigate("/dashboard/tasks");
 
-            toast.success("Task updated successfully");
+            toast.success("Task updated successfully",{ autoClose: 3000 });
 
         } catch (err) {
             setError(err);
-            getErrorMessage(err,"sorry! can't update this task")
+            getErrorMessage(err,"sorry! can't update this task");
+            toast.error("Failed to update task", { autoClose: 3000 });
 
         } finally {
             setLoading(false);
         }
     }
+
     const changeStatus = async (id,status) =>{
         try {
             await axiosInstance.put(`${TASKS_URLS.CHANGE_STATUS(id)}`,status)
@@ -146,7 +171,10 @@ const useTasks = () => {
    
 
   
-   return {tasks,total,changeStatus,setTotal,setTasks,page,setPage,pageSize,setPageSize,loading,error,fetchTasks,deleteTask,addTask,taskById,fetchOneTaskById,singleTask,updateTask,fetchUserTasks};
+   return {tasks,total,searchTerm,setSearchTerm,changeStatus,setTotal,
+    setTasks,page,setPage,pageSize,setPageSize,loading,error,fetchTasks,
+    deleteTask,addTask,taskById,fetchOneTaskById,singleTask,updateTask,
+    fetchUserTasks, initialLoading, tableLoading};
 }
 
 export default useTasks;

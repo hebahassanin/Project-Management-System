@@ -13,6 +13,7 @@ import useUsers from '../../../../hooks/useUsers';
 import { BeatLoader } from 'react-spinners';
 import { AuthContext } from '../../../../context/AuthContext';
 
+// this component is used for both adding and updating a task.
 export default function TasksData() {
   const [validated, setValidated] = useState(false);
   let{projects,loading,error,fetchProjects} = useProjects();
@@ -48,14 +49,7 @@ export default function TasksData() {
   }
 }, [singleTask, reset]);
 
-  //  reset({
-  //       title: singleTask?.title || "",
-  //       description: singleTask?.description || "",
-  //       employeeId: singleTask?.employeeId || "",
-  //       projectId: singleTask?.projectId || "",
 
-
-  //     })
   let onSubmit = async (data) => {
     console.log(data);
     console.log("ana hena to add or update")
@@ -105,12 +99,14 @@ export default function TasksData() {
           <Form onSubmit={handleSubmit(onSubmit)} className='form-admin ' >
             <Form.Group className="form-group mb-4">
               <Form.Label htmlFor="title">Title</Form.Label>
-              <Form.Control placeholder="Name" type="text" id="title" className='form-control' {...register("title",{required:"Title is required"})} />   
+              <Form.Control placeholder="Title" type="text" id="title" className='form-control' 
+              {...register("title",{required:"Title is required"})} />   
               {errors.title && <small className='text-danger d-block mt-1'>{errors.title.message}</small>}
             </Form.Group>
             <Form.Group className="form-group mb-4">  
               <Form.Label htmlFor="description">Description</Form.Label>
-              <Form.Control as="textarea" placeholder="Description" id="description" className='form-control' {...register("description",{required:"Description is required"})} ></Form.Control>  
+              <Form.Control as="textarea" placeholder="Description" id="description" className='form-control' 
+              {...register("description",{required:"Description is required"})} ></Form.Control>  
               {errors.description && <small className='text-danger d-block mt-1'>{errors.description.message}</small>}    
             </Form.Group>
             <Form.Group >
@@ -118,13 +114,14 @@ export default function TasksData() {
               <Col >
                 <Form.Group className="form-group mb-4">
                     <Form.Label htmlFor="employeeId">User</Form.Label>
-                    <Form.Select id="employeeId" className='form-control ' {...register("employeeId",{required:"User is required"})} >
+                    <Form.Select id="employeeId" className='form-control ' 
+                    {...register("employeeId",{required:"User is required"})} >
                       <option value="">Select user</option> 
                       {users.map((user) => (
                         <option key={user.id} value={user.id}>
                           {user.userName}
                         </option>
-                      ))  }
+                      ))}
                     </Form.Select>
                     {errors.employeeId && <small className='text-danger d-block mt-1'>{errors.employeeId.message}</small>}
                 </Form.Group>
@@ -132,7 +129,8 @@ export default function TasksData() {
              <Col>
               <Form.Group className="form-group" >
                 <Form.Label htmlFor="projectId">Project</Form.Label>
-                <Form.Select id="projectId" disabled={id} className='form-control' {...register("projectId",{required:"Project is required"})} >
+                <Form.Select id="projectId" disabled={id} className='form-control' 
+                {...register("projectId",{required:"Project is required"})} >
                   <option value="">Select project</option> 
                   {projects.map((project) => (
                     <option key={project.id} value={project.id}>
@@ -146,15 +144,16 @@ export default function TasksData() {
               </Row>
             </Form.Group>
             <Form.Group className='d-flex justify-content-between my-4'>
-              <Button type="button" className=' cancelBtn w-25 mt-4 ' onClick={()=>navigate("/dashboard/tasks"  )}>cancel</Button>
-               <Button disabled={isSubmitting} type='submit' className='w-25 mt-4 Auth-btn'>
+              <Button type="button" className=' cancelBtn w-25 mt-4 ' 
+                onClick={()=>navigate("/dashboard/tasks"  )}>Cancel</Button>
+              <Button disabled={isSubmitting} type='submit' className='w-25 mt-4 Auth-btn'>
                 {isSubmitting ?(
                     <>
-                    {id? "update":"Save"}
+                    {id? "Update":"Save"}
                     <span className='spinner-border spinner-border-sm ms-2' role='status' aria-hidden='true'/>
                     </>
-                  ):id? "update":"save"}
-            </Button>
+                  ):id? "Update":"Save"}
+              </Button>
             </Form.Group>
           </Form>
         </Col>

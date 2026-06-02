@@ -22,21 +22,19 @@ export default function ForgetPassword() {
   try {
     let response= await axiosInstance.post(USER_URLS.RESET_REQUEST,data);
     console.log(response);
-    toast.success('ready to reset your password',
+    toast.success(response?.data?.message,
     {
       autoClose: 3000,
     })
-    navigate('/reset-pass');
-
+    navigate('/reset-pass',{
+      state:{email:data.email}
+    });
     
   } catch (error) {
-    const userMessage = error?.response?.data?.additionalInfo?.response
-      ? "Cannot send reset email: please contact support."
-      : error?.response?.data?.message || "Failed to send request";
 
-    toast.error(userMessage, { autoClose: 5000 });
-
-    
+    toast.error(error?.response?.data?.message || "Failed to send request", 
+      { autoClose: 3000 }
+    );
   }
  }
   return (
@@ -45,12 +43,12 @@ export default function ForgetPassword() {
       <Form onSubmit={handleSubmit(onSubmit)} className='mx-5 my-3'>
         <AuthHeader subtitle={'welcome to PMS'} title={'Forget Password'}/> 
 
-      <Form.Group className="custom-input mb-3" controlId="exampleForm.ControlInput1">
-        <Form.Label className='textHeader'>E-mail</Form.Label>
-        <Form.Control type="email" placeholder="Enter your E-mail" 
-        {...register('email',EMAIL_VALIDATION)} />
-        {errors.email && <small className='text-danger d-block mt-1'>{errors.email.message}</small>}
-      </Form.Group>
+        <Form.Group className="custom-input mb-3" controlId="exampleForm.ControlInput1">
+          <Form.Label className='textHeader'>E-mail</Form.Label>
+          <Form.Control type="email" placeholder="Enter your E-mail" 
+          {...register('email',EMAIL_VALIDATION)} />
+          {errors.email && <small className='text-danger d-block mt-1'>{errors.email.message}</small>}
+        </Form.Group>
         <Button disabled={isSubmitting} type='submit' className='w-100 mt-4 Auth-btn'>
             {isSubmitting ?(
                 <>
@@ -59,8 +57,8 @@ export default function ForgetPassword() {
                 </>
               ):('Verify')}
         </Button>
-    </Form>
-     </Col>
+      </Form>
+    </Col>
       
     </>
   )

@@ -19,19 +19,25 @@ import { IoMdArrowDropup } from 'react-icons/io';
 export default function UsersList() {
   const [usersList, setUsersList] = useState([])
   const { userData } = useContext(AuthContext);
+
+  
   const [selectedUser, setSelectedUser] = useState(null);
-const [showUser, setShowUser] = useState(false);
-const [blockedUIUsers, setBlockedUIUsers] = useState([]);
-const [searchTerm, setSearchTerm] = useState('');
+  const [showUser, setShowUser] = useState(false);
+
+  const [blockedUIUsers, setBlockedUIUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
   // server pagination 
   const [page, setPage] = useState(1);
-const [pageSize, setPageSize] = useState(5);
-const [total, setTotal] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const [total, setTotal] = useState(0);
   // end server pagination
 
-const[loading,setLoading]=useState(false)
-  const getAllUsers = async () => {
-setLoading(true)
+const[loading,setLoading]=useState(false);
+
+// get all users for manager
+const getAllUsers = async () => {
+  setLoading(true)
     try {
       let response = await axiosInstance.get(USER_URLS.GET_USERS_BY_MANAGER,{
          params: {
@@ -39,26 +45,51 @@ setLoading(true)
           pageNumber:page,
     },
       })
-      console.log(response.data.data);
-      setUsersList(response.data.data);
-      setTotal(response?.data?.totalNumberOfRecords)
-
-     
-
-
-
-
+      console.log(response?.data?.data);
+      setUsersList(response?.data?.data);
+      setTotal(response?.data?.totalNumberOfRecords);
 
     } catch (error) {
-      toast.error(error.response?.data?.message);
-
-
-
+      toast.error(error.response?.data?.message || "Error fetching users", 
+        { autoClose: 3000 });
     }
-    finally{setLoading(false)}
+    finally{
+      setLoading(false)
+    }
 
   }
-  const toggleUserStatus = async (id) => {
+
+
+//   const toggleUserStatus = async (id) => {
+//   try {
+//     await axiosInstance.put(
+//       `${USER_URLS.TOGGLE_USER}/${id}`,
+//       {},
+//       {
+//         headers: {
+//           Authorization: `Bearer ${localStorage.getItem("token")}`,
+//         },
+//       }
+//     );
+//     toast.success("User status updated successfully");
+
+//   } catch (error) {
+//     toast.error(error.response?.data?.message || "Error updating status",
+//       { autoClose: 3000 }
+//     );
+//   }
+// };
+
+const toggleUserStatus = async (id) => {
+  // 1️⃣ update UI immediately
+  setUsersList(prev =>
+    prev.map(user =>
+      user.id === id
+        ? { ...user, isActivated: !user.isActivated }
+        : user
+    )
+  );
+
   try {
     await axiosInstance.put(
       `${USER_URLS.TOGGLE_USER}/${id}`,
@@ -70,14 +101,24 @@ setLoading(true)
       }
     );
 
-    toast.success("User status updated successfully");
-
-   
+    toast.success("User status updated successfully", { autoClose: 3000 });
 
   } catch (error) {
+    // 2️⃣ rollback لو فشل
+    // return ui to previous state because the backend update failed
+    setUsersList(prev =>
+      prev.map(user =>
+        user.id === id
+          ? { ...user, isActivated: !user.isActivated }
+          : user
+      )
+    );
+
     toast.error(error.response?.data?.message || "Error updating status");
   }
 };
+
+// view user details 
 const viewUser = async (userId) => {
   try {
     const response = await axiosInstance.get(
@@ -88,24 +129,28 @@ const viewUser = async (userId) => {
         },
       }
     );
-
-   
-    setSelectedUser(response.data);
+    setSelectedUser(response?.data);
     setShowUser(true);
   } catch (error) {
-    toast.error("Failed to load user data");
+    toast.error("Failed to load user data", { autoClose: 3000 });
   }
 };
 
-
+// toggle block/unblock user in UI without affecting backend status
 const toggleBlockUI = (id) => {
+  const isBlocked = blockedUIUsers.includes(id);
   setBlockedUIUsers(prev =>
-    prev.includes(id)
+    isBlocked
       ? prev.filter(userId => userId !== id)
       : [...prev, id]
   );
 
-  toast.info("Bloced successfully");
+  toast.success(
+    isBlocked
+    ? "User unblocked successfully"
+    : "User blocked successfully",
+    { autoClose: 3000 }
+  );
 };
 
  useEffect(() => {
@@ -121,21 +166,21 @@ const filteredUsers = searchTerm
      
     )
   : usersList;
+
+
   const columns = [
     {
       name: (<>User Name <LuChevronsUpDown /></>),
-      
       selector: row => row.userName,
       sortable: true,
     },
     {
      name: (<>Status <LuChevronsUpDown /></>),
-
     selector: row => row.status,  
     cell: (row) => (
      <button
-  className={`status text-white px-4 py-2 ${
-    blockedUIUsers.includes(row.id)
+      className={`status text-white px-4 py-2 ${
+      blockedUIUsers.includes(row.id)
       ? "inactive"
       : row.isActivated
       ? "active"
@@ -146,64 +191,56 @@ const filteredUsers = searchTerm
     if (!blockedUIUsers.includes(row.id)) {
       toggleUserStatus(row.id); 
     }
-  }}
-  
->
+  }}>
    {blockedUIUsers.includes(row.id)
     ? "Blocked"
     : row.isActivated
     ? "Active"
     : "Not Active"}
-</button>
+  </button>
     ),
     sortable: true,
   },
   
     {
       name: (<>Phone Number <LuChevronsUpDown /></>),
-
       selector: row => row.phoneNumber,
       sortable: true,
     },
     {
       name: (<>Email<LuChevronsUpDown /></>),
-
       selector: row => row.email,
       sortable: true,
     },
       {
       name: (<>Date Created <LuChevronsUpDown /></>),
-
-      
       selector: row => row.task[0].creationDate ?  new Date(row.task[0].creationDate).toLocaleDateString() : '-',
       sortable: true,
     },
     {
     name: 'Action',
     cell: (row) => (
-     <Dropdown align="end">
-  <Dropdown.Toggle
-    variant="light"
-    className="border-0 shadow-none p-0"
-    style={{ background: "transparent" }}
-  >
-    <HiOutlineDotsVertical size={22} />
-  </Dropdown.Toggle>
+    <Dropdown align="end">
+      <Dropdown.Toggle
+        variant="light"
+        className="border-0 shadow-none p-0"
+        style={{ background: "transparent" }}>
+        <HiOutlineDotsVertical size={22} />
+      </Dropdown.Toggle>
 
-  <Dropdown.Menu className="py-1">
-  <Dropdown.Item
-  className="d-flex align-items-center"
-  onClick={() => toggleBlockUI(row.id)}
->
-  {blockedUIUsers.includes(row.id) ? "Unblock" : "Block"}
-</Dropdown.Item>
+      <Dropdown.Menu className="py-1">
+        <Dropdown.Item
+          className="d-flex align-items-center"
+          onClick={() => toggleBlockUI(row.id)}>
+          {blockedUIUsers.includes(row.id) ? "Unblock" : "Block"}
+        </Dropdown.Item>
 
-    <Dropdown.Item className="d-flex align-items-center"  onClick={() => viewUser(row.id)}>
-       <FiEye className="me-2" />
-  View
-    </Dropdown.Item>
-  </Dropdown.Menu>
-          </Dropdown>
+        <Dropdown.Item className="d-flex align-items-center"  onClick={() => viewUser(row.id)}>
+          <FiEye className="me-2" />
+          View
+        </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
      
     ),
   
@@ -215,145 +252,36 @@ const filteredUsers = searchTerm
   return (
     
     <div>
-     <Search placeholder='search user name' onSearch={setSearchTerm}/>
+     <Search placeholder='Search by user name' onSearch={setSearchTerm}/>
       
-      {/* <table className="table">
-        <thead >
-          <tr >
-        <th scope="col" className='text-white'>
-  User Name
-  <LuChevronsUpDown className='' />
-</th>
-
-            
-            <th scope="col" className='text-white'>Status<LuChevronsUpDown /></th>
-            <th scope="col"className='text-white' >Phone Number<LuChevronsUpDown /></th>
-            <th scope="col"className='text-white'>Email<LuChevronsUpDown /></th>
-
-            <th scope="col"className='text-white'>Date Created<LuChevronsUpDown /></th>
-
-
-            <th scope="col"></th>
-
-            <th></th>
-          </tr>
-
-        </thead>
-       <tbody>
-  {filteredUsers.length > 0 ? (
-    filteredUsers.length.map(user => (
-      <tr key={user.id}>
-        <td>{user.userName}</td>
-
-        <td>
-         
- <button
-  className={`status ${
-    blockedUIUsers.includes(user.id)
-      ? "inactive"
-      : user.isActivated
-      ? "active"
-      : "inactive"
-  }`}
-  disabled={blockedUIUsers.includes(user.id)}
-  onClick={() => {
-    if (!blockedUIUsers.includes(user.id)) {
-      toggleUserStatus(user.id); 
-    }
-  }}
->
-  {blockedUIUsers.includes(user.id)
-    ? "Blocked"
-    : user.isActivated
-    ? "Active"
-    : "Not Active"}
-</button>
-
-</td>
-
-
-       
-
-        <td>{user.phoneNumber}</td>
-        <td>{user.email}</td>
-        <td>{user.creationDate}</td>
-
-        <td>
-          <Dropdown align="end">
-  <Dropdown.Toggle
-    variant="light"
-    className="border-0 shadow-none p-0"
-    style={{ background: "transparent" }}
-  >
-    <HiOutlineDotsVertical size={22} />
-  </Dropdown.Toggle>
-
-  <Dropdown.Menu className="py-1">
-  <Dropdown.Item
-  className="d-flex align-items-center"
-  onClick={() => toggleBlockUI(user.id)}
->
-  {blockedUIUsers.includes(user.id) ? "Unblock" : "Block"}
-</Dropdown.Item>
-
-    <Dropdown.Item className="d-flex align-items-center"  onClick={() => viewUser(user.id)}>
-       <FiEye className="me-2" />
-  View
-    </Dropdown.Item>
-  </Dropdown.Menu>
-          </Dropdown>
-
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      
-       <td colSpan="6" className="text-end">
-    <NoData />
-  </td>
-      
-    </tr>
-  )}
-</tbody>
-
-      </table> */}
    <DataTable
 			columns={columns}
 			data={filteredUsers}
-        pagination
-          paginationServer
-
-          paginationTotalRows={total}
-
-          paginationDefaultPage={page}
-          paginationPerPage={pageSize}
-          
-
-          onChangePage={(page) => setPage(page)}
-          onChangeRowsPerPage={(size) => {
-            setPageSize(size);
-            setPage(page);
-          
-          
+      pagination
+      paginationServer
+      paginationTotalRows={total}
+      paginationDefaultPage={page}
+      paginationPerPage={pageSize}
+      onChangePage={(page) => setPage(page)}
+      onChangeRowsPerPage={(size) => {
+        setPageSize(size);
+        setPage(page);
+      } 
           }
-          
-          
-          }
-                        customStyles={{
-    headCells: {
-      style: {
-        fontSize: "14px",
-        fontWeight: "400",
-        
-      },
-    },
-    cells: {
-      style: {
-        fontSize: "16px",
-        fontWeight: "400",
-      },
-    },
+      customStyles={{
+        headCells: {
+          style: {
+            fontSize: "14px",
+            fontWeight: "400",
+            
+          },
+        },
+        cells: {
+          style: {
+            fontSize: "16px",
+            fontWeight: "400",
+          },
+        },
   }}
     
           

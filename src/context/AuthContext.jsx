@@ -13,7 +13,7 @@ export default function AuthContextProvider ({children}){
 
         if(encodedToken){
             const decodedToken = jwtDecode(encodedToken);
-           // console.log(decodedToken);
+        //  console.log(decodedToken);
             setUserData(decodedToken);
         }
 

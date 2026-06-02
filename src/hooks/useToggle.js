@@ -5,6 +5,5 @@ const useToggle=()=>{
     const toggleValue=()=>setValue(!value);
     return [value,toggleValue];
 
-
 }
 export default useToggle;

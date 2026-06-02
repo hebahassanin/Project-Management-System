@@ -19,15 +19,21 @@ import styles from "./TasksList.module.css";
 
 export default function TasksList() {
   const navigate = useNavigate();
-  const { tasks,changeStatus, loading, page, setPage, total, pageSize, setPageSize, fetchTasks, fetchUserTasks, deleteTask, updateTask } = useTasks();
+  const { tasks,changeStatus, loading, page, setPage, total, pageSize, setPageSize,
+     fetchTasks, fetchUserTasks, deleteTask, updateTask, searchTerm, setSearchTerm,
+     initialLoading, tableLoading } = useTasks();
   const { userData } = useContext(AuthContext);
 
+  // State for delete confirmation modal
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
+
+  // State for view task
   const [showView, setShowView] = useState(false);
   const [viewTask, setViewTask] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+
+  // State for storing tasks in board view
   const [boardTasks, setBoardTasks] = useState([]);
 
   const column = [
@@ -59,7 +65,7 @@ export default function TasksList() {
             <DropdownButton
               actions={{
                 view: { label: "View", icon: <FaEye color="#009247" />, onClick: () => handleView(row) },
-                edit: { label: "Edit", icon: <FaEdit color="#009247" />, onClick: () => navigate(`/dashboard/tasks-data/${row.id}`) },
+                edit: { label: "Edit", icon: <FaEdit color="#ef9b28" />, onClick: () => navigate(`/dashboard/tasks-data/${row.id}`) },
                 delete: { label: "Delete", icon: <RiDeleteBin6Line color="red" />, onClick: () => openConfirmationModal(row.id, row.title), class: "text-danger" }
               }}
             />
@@ -80,12 +86,23 @@ export default function TasksList() {
    loadTasks()
   }, [role, page, pageSize]);
 
+  // in server to avoid too many request when user write in search input
+  useEffect(() => {
+  const delay = setTimeout(() => {
+    setPage(1);
+    fetchTasks();
+  }, 500);
+
+  return () => clearTimeout(delay);
+}, [searchTerm]);
+
  
-    useEffect(() => {
-      if (role !=="Manager") setBoardTasks(tasks);
+  useEffect(() => {
+    if (role !=="Manager") setBoardTasks(tasks);
 
-    }, [tasks]);
+  }, [tasks]);
 
+  // Model to confirm delete task
   const openConfirmationModal = (id, name) => {
     setSelectedId(id);
     setSelectedName(name);
@@ -97,11 +114,14 @@ export default function TasksList() {
     setSelectedName(null);
   };
 
+  // Model to view task details
   const handleView = (task) => {
     setViewTask(task);
     setShowView(true);
   };
   const handleCloseView = () => setShowView(false);
+
+
  const groupedTasks = boardTasks.reduce((acc, task) => {
     const status = task.status;
     if (!acc[status]) acc[status] = [];
@@ -130,15 +150,18 @@ export default function TasksList() {
     console.error(err);
   }
 };
-//search 
-const filteredTasks = searchTerm
-  ? tasks.filter(task =>
-      task.title.toLowerCase().includes(searchTerm.toLowerCase())
-     
-    )
-  : tasks;
 
-  if (loading) return <div className='d-flex align-items-center justify-content-center vh-100'><BeatLoader size={30} color='#288131' margin={10} /></div>;
+//search 
+// const filteredTasks = searchTerm
+//   ? tasks.filter(task =>
+//       task.title.toLowerCase().includes(searchTerm.toLowerCase())
+     
+//     )
+//   : tasks;
+
+
+
+  if (initialLoading) return <div className='d-flex align-items-center justify-content-center vh-100'><BeatLoader size={30} color='#288131' margin={10} /></div>;
 
   return (
     <>
@@ -156,10 +179,14 @@ const filteredTasks = searchTerm
 
       {role === "Manager" ? (
         <>
-          <Search placeholder='search task' onSearch={setSearchTerm} />
+          <Search placeholder='search tasks by title' onSearch={(value)=>
+          {
+            setSearchTerm(value);
+            setPage(1);
+          }} />
           <DataTable
             columns={column}
-            data={filteredTasks}
+            data={tasks}
             pagination
             paginationServer
             paginationTotalRows={total}
@@ -167,7 +194,9 @@ const filteredTasks = searchTerm
             paginationPerPage={pageSize}
             onChangePage={setPage}
             onChangeRowsPerPage={(size) => { setPageSize(size); setPage(page); }}
-            progressPending={loading}
+            progressPending={tableLoading}
+            progressComponent={
+            <div className='py-5'><BeatLoader size={30} color='#288131' margin={10} /></div>}
           />
         </>
       ) : (
@@ -184,34 +213,35 @@ const filteredTasks = searchTerm
 
       <Confirmation
         show={showModal}
-        deletedElement=""
+        title={'Task'}
+        message={`Are you sure you want to delete the task ${selectedName} ?`}
         onClose={() => setShowModal(false)}
-        onConfirm={() => { deleteTask(selectedId); closeDeleteModal(); }}
-        task={selectedName}
+        onConfirm={() => { 
+          deleteTask(selectedId); 
+          closeDeleteModal(); 
+        }}
       />
 
-      <Modal show={showView} onHide={handleCloseView} className='view_modal'>
+      <Modal show={showView} onHide={handleCloseView} className='view_modal' centered>
         <Modal.Header closeButton>
           <Modal.Title className='model_style'>Task Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h6 className='p-2'>Task title: {viewTask?.title}</h6>
-          <h6> Task Status: 
-            <span  className={`p-2 d-inline-block rounded-pill mx-2 ${
+          <h6 className='p-2'><span className='fw-bold'>Task Title:</span> {viewTask?.title}</h6>
+          <h6 className='px-2'> <span className='fw-bold'>Task Status:</span> 
+            <span  className={`p-2 d-inline-block rounded-3 text-white mx-2 ${
                 viewTask?.status === "ToDo"
                   ? "bg-notActive"
                   : viewTask?.status === "InProgress"
                   ? "bg-progress"
                   : "bg-active"
               }`}>
-                  {viewTask?.status}
+                {viewTask?.status}
             </span>
              
           </h6>
-
-
-          <h6 className='p-2'>Task User: {viewTask?.employee.userName}</h6>
-          <h6 className='p-2'>Task Project: {viewTask?.project.title}</h6>
+          <h6 className='p-2'><span className='fw-bold'>Task User:</span> {viewTask?.employee.userName}</h6>
+          <h6 className='p-2'><span className='fw-bold'>Task Project:</span> {viewTask?.project.title}</h6>
         </Modal.Body>
       </Modal>
      

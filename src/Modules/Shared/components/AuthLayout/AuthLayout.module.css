@@ -24,10 +24,10 @@
 .content_authLayout {
   position: relative;
   z-index: 2; 
-  display: flex;
+  /* display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column; 
+  flex-direction: column;  */
   min-height: 100vh;
  
 }

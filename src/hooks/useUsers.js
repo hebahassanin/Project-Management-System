@@ -5,7 +5,8 @@ const useUsers = () => {
     console.log("useUsers Hook Initialized");
     const [users,setUsers] = useState([]);    
     const [loading,setLoading] = useState(false);
-    const [error,setError] = useState(null);        
+    const [error,setError] = useState(null);   
+         
     const fetchUsers = async () => {
         console.log("fetchUsers Called");
         setLoading(true);   

@@ -20,16 +20,5 @@ export default function Search({ placeholder = "Search...", onSearch }) {
    
   )
 
-// </div>
-//     <InputGroup className="mb-3 w-50" >
-//       <span>
-//         <FaSearch />
-//       </span>
-//       <FormControl
-//         type="text"
-//         placeholder={placeholder}
-//         onChange={handleChange}
-//       />
-//     </InputGroup>
-//   );
+
 }
