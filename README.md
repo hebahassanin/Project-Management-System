@@ -10,14 +10,14 @@ A role-based Project Management System that enables managers to manage projects,
 
 ## Features
 ### Authentication & Authorization
- - Complete Authentication Flow including Login, Registration, Email Verification,Forget/Reset Password,
+ - Complete Authentication Flow including Login, Registration, Email Verification, Forget/Reset Password,
    and Change Password.
  - Form handling and validation using React Hook Form with API integration.
  - Protected Routes for secure navigation and access control.
  - Role-Based Access Control (Manager & Employee)
 
 ### Manager Features
- - Full CRUD operations for Projects and Tasks (Create, Read, Update, Delete and View).
+ - Full CRUD operations for Projects and Tasks (Create, Read, Update, Delete).
  - Assign and manage tasks for employees.
  - View and manage users assigned to the manager only.
  - Update user status (Active / Inactive).
@@ -52,7 +52,7 @@ A role-based Project Management System that enables managers to manage projects,
  - JWT Decode
  - React Bootstrap
  - React Pro Sidebar
- - Dnd Kit
+ - DnD Kit
  - React Chartjs 2
  - Chart.js
  - React Toastify
@@ -63,7 +63,7 @@ A role-based Project Management System that enables managers to manage projects,
 ## Demo Credentials
 ### Manager Account
 Email: hebahassanin20@gmail.com
-Password: @1234Heba
+Password: @123Demo
 
 ### Employee Account
 Create a new account using the registration page.
