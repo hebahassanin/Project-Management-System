@@ -29,7 +29,7 @@ export default function UsersList() {
 
   // server pagination 
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(7);
   const [total, setTotal] = useState(0);
   // end server pagination
 
